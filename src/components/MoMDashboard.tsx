@@ -23,7 +23,7 @@ import dynamic from 'next/dynamic';
 import 'easymde/dist/easymde.min.css';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-
+import Image from 'next/image';
 const SimpleMDE = dynamic(() => import('react-simplemde-editor'), { ssr: false });
 
 interface Meeting {
@@ -312,9 +312,13 @@ const MoMDashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-purple-100 to-pink-100">
       <div className="container mx-auto p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text">
-            COSC MoM
-          </h1>
+        <Image 
+        src="/logo.png" 
+        alt="Logo" 
+        width={50} 
+        height={50} 
+       
+      />
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
