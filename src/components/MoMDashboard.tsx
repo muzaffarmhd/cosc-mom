@@ -161,7 +161,7 @@ const MoMDashboard = () => {
 
     return (
       <div className="w-full h-full p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg">
-        <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
           <div>
             <h3 className="text-lg font-semibold text-purple-800">
               {meeting.title} - {meeting.date} at {meeting.time}
