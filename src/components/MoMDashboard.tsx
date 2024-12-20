@@ -137,27 +137,28 @@ const MoMDashboard = () => {
     return DOMPurify.sanitize(rawHtml);
   };
 
-  const MeetingViewer = ({ meeting }: { meeting: Meeting }) => {
+  const MeetingViewer = ({ meeting }: { meeting: Meeting | undefined }) => {
     if (!meeting) {
-        return (
-          <div className="w-full h-full p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg">
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h3 className="text-lg font-semibold text-red-800">
-                  Meeting not found
-                </h3>
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => setSelectedMeeting(null)}
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" /> Back
-              </Button>
+      return (
+        <div className="w-full h-full p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h3 className="text-lg font-semibold text-red-800">
+                Meeting not found
+              </h3>
             </div>
+            <Button
+              variant="outline"
+              onClick={() => setSelectedMeeting(null)}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" /> Back
+            </Button>
           </div>
-        );
-      }
+        </div>
+      );
+    }
+
     return (
       <div className="w-full h-full p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg">
         <div className="flex justify-between items-center mb-4">
@@ -198,29 +199,36 @@ const MoMDashboard = () => {
       </div>
     );
   };
-  const MeetingEditor = ({ meeting }: { meeting: Meeting }) => {
-    if (!meeting) {
-        return (
-          <div className="w-full h-full p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg">
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h3 className="text-lg font-semibold text-red-800">
-                  Meeting not found
-                </h3>
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => setSelectedMeeting(null)}
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" /> Back
-              </Button>
-            </div>
-          </div>
-        );
+
+  const MeetingEditor = ({ meeting }: { meeting: Meeting | undefined }) => {
+    const [content, setContent] = useState('');
+    
+    useEffect(() => {
+      if (meeting) {
+        setContent(meeting.content);
       }
-    const [content, setContent] = useState(meeting.content);
-    const [isEditable, setIsEditable] = useState(true);
+    }, [meeting]);
+
+    if (!meeting) {
+      return (
+        <div className="w-full h-full p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h3 className="text-lg font-semibold text-red-800">
+                Meeting not found
+              </h3>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => setSelectedMeeting(null)}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" /> Back
+            </Button>
+          </div>
+        </div>
+      );
+    }
   
     return (
       <div className="w-full h-full p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg">
@@ -288,6 +296,7 @@ const MoMDashboard = () => {
       </div>
     );
   };
+
   
 
   const CardPreview = ({ content }: { content: string }) => (
