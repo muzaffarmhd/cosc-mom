@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Minutes of Meeting Application",
-  description: "Create and manage meeting minutes",
+  title: "COSC Minutes of the meet",
+  description: "Create and manage MoMs",
 };
 
 export default function RootLayout({
