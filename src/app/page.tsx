@@ -17,7 +17,7 @@ export default function Home() {
   }, [user, loading, router]);
 
   if (loading || !user) {
-    return <div>Loading...</div>;
+    return (<div>Loading...</div>);
   }
 
   return (

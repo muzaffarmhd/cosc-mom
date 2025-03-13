@@ -19,12 +19,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { db } from '@/lib/firebase';
 import { collection, addDoc, updateDoc, doc, deleteDoc, onSnapshot } from 'firebase/firestore';
-import dynamic from 'next/dynamic';
-import 'easymde/dist/easymde.min.css';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import Image from 'next/image';
-const SimpleMDE = dynamic(() => import('react-simplemde-editor'), { ssr: false });
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Link from '@tiptap/extension-link';
+import Placeholder from '@tiptap/extension-placeholder';
 
 interface Meeting {
   id: string;
@@ -203,11 +204,33 @@ const MoMDashboard = () => {
   const MeetingEditor = ({ meeting }: { meeting: Meeting | undefined }) => {
     const [content, setContent] = useState('');
     
+    const editor = useEditor({
+      extensions: [
+        StarterKit,
+        Link.configure({
+          openOnClick: false,
+        }),
+        Placeholder.configure({
+          placeholder: 'Type the MoM here...',
+        }),
+      ],
+      content: content,
+      editorProps: {
+        attributes: {
+          class: 'prose prose-purple max-w-none min-h-[500px] p-4 focus:outline-none',
+        },
+      },
+      onUpdate: ({ editor }) => {
+        setContent(editor.getHTML());
+      },
+    });
+
     useEffect(() => {
-      if (meeting) {
+      if (meeting && editor) {
+        editor.commands.setContent(meeting.content);
         setContent(meeting.content);
       }
-    }, [meeting]);
+    }, [meeting, editor]);
 
     if (!meeting) {
       return (
@@ -264,35 +287,43 @@ const MoMDashboard = () => {
             </Button>
           </div>
         </div>
-        <SimpleMDE
-          value={content}
-          onChange={setContent}
-          options={{
-            autofocus: true,
-            spellChecker: true,
-            placeholder: "Type the MoM here...",
-            status: false,
-            toolbar: [
-              "bold",
-              "italic",
-              "heading",
-              "|",
-              "quote",
-              "unordered-list",
-              "ordered-list",
-              "|",
-              "link",
-              "table",
-              "|",
-              "preview",
-              "side-by-side",
-              "fullscreen",
-              "|",
-              "guide",
-            ],
-          }}
-          className="min-h-[500px] prose prose-purple max-w-none"
-        />
+        <div className="border rounded-lg bg-white">
+          <div className="border-b p-2 flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => editor?.chain().focus().toggleBold().run()}
+              className={editor?.isActive('bold') ? 'bg-purple-100' : ''}
+            >
+              <span className="font-bold">B</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => editor?.chain().focus().toggleItalic().run()}
+              className={editor?.isActive('italic') ? 'bg-purple-100' : ''}
+            >
+              <span className="italic">I</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => editor?.chain().focus().toggleBulletList().run()}
+              className={editor?.isActive('bulletList') ? 'bg-purple-100' : ''}
+            >
+              • List
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => editor?.chain().focus().toggleOrderedList().run()}
+              className={editor?.isActive('orderedList') ? 'bg-purple-100' : ''}
+            >
+              1. List
+            </Button>
+          </div>
+          <EditorContent editor={editor} />
+        </div>
       </div>
     );
   };
