@@ -127,18 +127,27 @@ const MoMDashboard = () => {
     setIsDeleteDialogOpen(true);
   };
 
-  const renderMarkdown = (content: string) => {
-    if (!content) return '';
-    
-    // Parse markdown and sanitize the resulting HTML
-    const rawHtml = marked(content, {
-      gfm: true,
-      breaks: true
-    });
-    return DOMPurify.sanitize(rawHtml);
-  };
+  // Update the renderMarkdown function to be async
+const renderMarkdown = async (content: string) => {
+  if (!content) return '';
+  
+  // Parse markdown and sanitize the resulting HTML
+  const rawHtml = await marked(content, {
+    gfm: true,
+    breaks: true
+  });
+  return DOMPurify.sanitize(rawHtml);
+};
 
   const MeetingViewer = ({ meeting }: { meeting: Meeting | undefined }) => {
+    const [html, setHtml] = useState('');
+
+    useEffect(() => {
+      if (meeting?.content) {
+        renderMarkdown(meeting.content).then(setHtml);
+      }
+    }, [meeting?.content]);
+
     if (!meeting) {
       return (
         <div className="w-full h-full p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg">
@@ -193,7 +202,7 @@ const MoMDashboard = () => {
         </div>
         <div className="prose prose-purple max-w-none">
           <div 
-            dangerouslySetInnerHTML={{ __html: renderMarkdown(meeting.content) }} 
+            dangerouslySetInnerHTML={{ __html: html }} 
             className="markdown-preview"
           />
         </div>
@@ -330,14 +339,23 @@ const MoMDashboard = () => {
 
   
 
-  const CardPreview = ({ content }: { content: string }) => (
+  // Update CardPreview component to handle async markdown rendering
+const CardPreview = ({ content }: { content: string }) => {
+  const [html, setHtml] = useState('');
+
+  useEffect(() => {
+    renderMarkdown(content).then(setHtml);
+  }, [content]);
+
+  return (
     <div className="prose prose-sm line-clamp-3">
       <div 
-        dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }}
+        dangerouslySetInnerHTML={{ __html: html }} 
         className="markdown-preview"
       />
     </div>
   );
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-100 to-pink-100">
